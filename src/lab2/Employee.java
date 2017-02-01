@@ -36,6 +36,11 @@ public class Employee {
         this.ssn = ssn;
     }
 
+    
+    private String getFormattedDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy");
+        return sdf.format(orientationDate);
+    }
     // Assume this must be performed first, and assume that an employee
     // would only do this once, upon being hired.
     public void meetWithHrForBenefitAndSalryInfo() {
@@ -59,7 +64,7 @@ public class Employee {
     // Assume this must be performed third. And assume that because department
     // policies may change that this method may need to be called 
     // independently from other classes.
-    public void reviewDeptPolicies() {
+    private void reviewDeptPolicies() {
         reviewedDeptPolicies = true;
         SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy");
         String fmtDate = sdf.format(orientationDate);        
@@ -87,6 +92,10 @@ public class Employee {
     // allowed through validation.
     
     public void setFirstName(String firstName) {
+        
+        if(firstName == null || firstName.isEmpty()) {
+            System.out.println("First Name is required");
+        }
        this.firstName = firstName;
     }
 
@@ -95,14 +104,22 @@ public class Employee {
     }
 
     public void setLastName(String lastName) {
+        
+        if(lastName == null || lastName.isEmpty()) {
+            String REQUIRED_MSG;
+            System.out.println("Last name is required");;
+        }
        this.lastName = lastName;
     }
-
+    
     public String getSsn() {
         return ssn;
     }
 
     public void setSsn(String ssn) {
+        if(ssn == null || ssn.length() < 9 || ssn.length() > 11) {
+            System.out.println( " Social Security number required and must be between 9 and 11 characters (if hyphens are used)");
+        }
         this.ssn = ssn;
     }
 
@@ -145,6 +162,9 @@ public class Employee {
 
     
     public void setCubeId(String cubeId) {
+        if(cubeId == null || cubeId.isEmpty()) {
+            System.out.println("This is required");
+        }
         this.cubeId = cubeId;
     }
 
@@ -153,5 +173,8 @@ public class Employee {
     }
 
     public void setOrientationDate(Date orientationDate) {
+        if(orientationDate == null) {
+            System.out.println("Orientation Date is required.");;
+        }
         this.orientationDate = orientationDate;
     }}
