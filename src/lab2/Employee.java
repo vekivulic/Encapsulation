@@ -2,6 +2,7 @@ package lab2;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import lab4.solution.EmployeeReportService;
 
 /**
  * In this lab focus on METHOD encapsulation and fix/add code as necessary.
@@ -19,7 +20,12 @@ import java.util.Date;
  * @author      Jim Lombardo, WCTC Instructor
  * @version     1.02
  */
-public class Employee {
+public class Employee { 
+    // Use constants for numbers or Strings that a repeated 
+    // (all are called 'magic numbers', which are evil)
+    
+   
+    
     private String firstName;
     private String lastName;
     private String ssn;
@@ -29,31 +35,67 @@ public class Employee {
     private boolean movedIn;
     private String cubeId;
     private Date orientationDate;
+    private EmployeeReportService reportService;
 
+    /*
+        Notice we force certain mandatory properties by using a custom
+        constructor. But we use the setter method to peform validation.
+    */
     public Employee(String firstName, String lastName, String ssn) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.ssn = ssn;
+        setFirstName(firstName);
+        setLastName(lastName);
+        setSsn(ssn);
+        reportService = new EmployeeReportService();
     }
+    
+    /* 
+        This should be private because it is useful only to this class and then,
+        only as a helper method to other methods. This is method hiding - a type 
+        of encapsulation where we put frequently used code in one place for for
+        easy editing later if necessary.
+    */
+    private String getFormattedDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy");
+        return sdf.format(orientationDate);
+    }
+    
+    /*
+        This method is public because it must be available to other classes in
+        this project. Notice that it controls the order in which the helper methods
+        are called. Order isn't always an issue, but here it obviously is, which
+        may be an important requirement.
+    */
+    public void doFirstTimeOrientation(String cubeId) {
+        orientationDate = new Date();
+        meetWithHrForBenefitAndSalryInfo();
+        meetDepartmentStaff();
+        reviewDeptPolicies();
+        moveIntoCubicle(cubeId);
+    }
+    
+    // The following methods may be public or private, depending on whether
+    // they need to be called from other classes independently.
 
     // Assume this must be performed first, and assume that an employee
-    // would only do this once, upon being hired.
-    public void meetWithHrForBenefitAndSalryInfo() {
+    // would only do this once, upon being hired. If that were true, this
+    // method should not be public. It should only be available to this class
+    // and should only be called as part of the larger task of:
+    // doFirtTimeOrientation()
+    private void meetWithHrForBenefitAndSalryInfo() {
         metWithHr = true;
-        SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy");
-        String fmtDate = sdf.format(orientationDate);        
-        System.out.println(firstName + " " + lastName + " met with Hr on "
-            + fmtDate);
+        reportService.addData(firstName + " " + lastName + " met with Hr on "
+            + getFormattedDate() );
     }
 
     // Assume this must be performed first, and assume that an employee
-    // would only do this once, upon being hired.:
-    public void meetDepartmentStaff() {
+    // would only do this once, upon being hired. If that were true, this
+    // method should not be public. It should only be available to this class
+    // and should only be called as part of the larger task of:
+    // doFirtTimeOrientation()
+    private void meetDepartmentStaff() {
         metDeptStaff = true;
-        SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy");
-        String fmtDate = sdf.format(orientationDate);        
-        System.out.println(firstName + " " + lastName + " met with Dept. Staff on "
-            + fmtDate);
+        reportService.addData(firstName + " " + lastName + " met with Dept. Staff on "
+            + getFormattedDate());
     }
 
     // Assume this must be performed third. And assume that because department
@@ -61,10 +103,8 @@ public class Employee {
     // independently from other classes.
     public void reviewDeptPolicies() {
         reviewedDeptPolicies = true;
-        SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy");
-        String fmtDate = sdf.format(orientationDate);        
-        System.out.println(firstName + " " + lastName + " reviewed Dept policies on "
-            + fmtDate);
+        reportService.addData(firstName + " " + lastName + " reviewed Dept policies on "
+            + getFormattedDate());
     }
 
     // Assume this must be performed 4th. And assume that because employees
@@ -73,10 +113,8 @@ public class Employee {
     public void moveIntoCubicle(String cubeId) {
         this.cubeId = cubeId;
         this.movedIn = true;
-        SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy");
-        String fmtDate = sdf.format(orientationDate);        
-        System.out.println(firstName + " " + lastName + " moved into cubicle "
-                + cubeId + " on " + fmtDate);
+        reportService.addData(firstName + " " + lastName + " moved into cubicle "
+                + cubeId + " on " + getFormattedDate());
     }
 
     public String getFirstName() {
@@ -84,10 +122,14 @@ public class Employee {
     }
 
     // setter methods give the developer the power to control what data is
-    // allowed through validation.
-    
+    // allowed through validation. Throwing ane exception is the best
+    // practice when validation fails. Don't do a System.out.println()
+    // to display an error message -- not the job of this class!
     public void setFirstName(String firstName) {
-       this.firstName = firstName;
+        if(firstName == null || firstName.isEmpty()) {
+            System.out.println("First Name required");
+        }
+        this.firstName = firstName;
     }
 
     public String getLastName() {
@@ -95,7 +137,10 @@ public class Employee {
     }
 
     public void setLastName(String lastName) {
-       this.lastName = lastName;
+        if(lastName == null || lastName.isEmpty()) {
+            System.out.println("Last Name is required");
+        }
+        this.lastName = lastName;
     }
 
     public String getSsn() {
@@ -103,6 +148,9 @@ public class Employee {
     }
 
     public void setSsn(String ssn) {
+        if(ssn == null || ssn.length() < 9 || ssn.length() > 11) {
+            System.out.println( "Social Security and must be between 9 and 11 characters (if hyphens are used)");
+        }
         this.ssn = ssn;
     }
 
@@ -145,6 +193,9 @@ public class Employee {
 
     
     public void setCubeId(String cubeId) {
+        if(cubeId == null || cubeId.isEmpty()) {
+            System.out.println("Required");
+        }
         this.cubeId = cubeId;
     }
 
@@ -153,5 +204,18 @@ public class Employee {
     }
 
     public void setOrientationDate(Date orientationDate) {
+        if(orientationDate == null) {
+            System.out.println("Required Date");
+        }
+        this.orientationDate = orientationDate;
     }
+
+    public EmployeeReportService getReportService() {
+        return reportService;
+    }
+
+    public void setReportService(EmployeeReportService reportService) {
+        this.reportService = reportService;
+    }
+    
 }
