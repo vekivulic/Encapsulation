@@ -194,7 +194,7 @@ public class Employee {
     
     public void setCubeId(String cubeId) {
         if(cubeId == null || cubeId.isEmpty()) {
-            System.out.println("Required");
+            System.out.println("Cude ID is required");
         }
         this.cubeId = cubeId;
     }
