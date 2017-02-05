@@ -65,6 +65,7 @@ public class Employee {
         are called. Order isn't always an issue, but here it obviously is, which
         may be an important requirement.
     */
+    // cubeID id must be passed and come in from somewhere 
     public void doFirstTimeOrientation(String cubeId) {
         orientationDate = new Date();
         meetWithHrForBenefitAndSalryInfo();
@@ -111,8 +112,14 @@ public class Employee {
     // sometimes change office locations that this method may need to be called 
     // independently from other classes.
     public void moveIntoCubicle(String cubeId) {
+        if(cubeId==null || cubeId.isEmpty()){
+            System.out.println("Error");
+        }else{
         this.cubeId = cubeId;
         this.movedIn = true;
+        
+        }
+
         reportService.addData(firstName + " " + lastName + " moved into cubicle "
                 + cubeId + " on " + getFormattedDate());
     }
